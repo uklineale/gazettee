@@ -1,0 +1,5 @@
+images/
+raw_docs/
+parsed_texts/
+src/__pycache__/
+.vscode/
