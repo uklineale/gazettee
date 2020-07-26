@@ -1,18 +1,64 @@
 from pdf2image import convert_from_path
 import os
+import time
+from shutil import copyfile
+import re
 from PIL import Image
 import pytesseract
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+POLICY_LINES = 5
+TITLE_LINES = 20
 
 class Parser:
-    def __init__(self, pdf_dir, image_dir, parsed_dir):
+    def __init__(self, pdf_dir, image_dir, parsed_dir, retitled_dir):
         self.pdf_dir = pdf_dir
         self.image_dir = image_dir
         self.parsed_dir = parsed_dir
+        self.retitled_dir = retitled_dir
 
 
+    # Only works on EPD police policy documents
+    # TODO: parse dates in rename
+    def retitle(self, id):
+        filename = "unnamed_" + str(id) + ".txt"
+        title = ''
+
+        try:
+            with open(self.parsed_dir + filename) as f:
+                whitespace_matcher = re.compile('\s+')
+                lines = [next(f) for x in range(TITLE_LINES)]
+                lines = [x for x in lines if whitespace_matcher.match(x) is None]
+                title = ''
+
+                for i in range(len(lines)):
+                    line = lines[i]
+                    if 'PURPOSE AND SCOPE' in line and i > 1:
+                        subject = lines[i-1]
+                        trimmed = subject.lower().replace("\n","")
+                        snaked = trimmed.replace(" ", "_")
+
+                        title = str(id) + "_police_" + snaked + ".txt"
+                        print("Writing " + title)
+
+            if title is not '': 
+                copyfile(self.parsed_dir + filename, self.retitled_dir + title)        
+            else:
+                print("Skipping " + filename)
+        except Exception as e:
+            print("Exception!!")
+            print(e)
+            return 
+
+            
 #TODO: rotate horizontally scanned images (from books), creates garbage after OCR
-    def parse_pdfs(self, pages=300):
-        for filename in os.listdir(self.pdf_dir):
+    def parse_pdfs(self, id, pages=300):
+        try:
+            if self.already_parsed(id):
+                print("Skipping " + str(id))
+                return
+
+            filename = "unnamed_" + str(id) + ".pdf"
             print("Parsing " + filename)
             pages = convert_from_path(self.pdf_dir + filename, pages)
 
@@ -32,3 +78,16 @@ class Parser:
                 out.write(text)
             
             out.close()
+
+            [os.remove(self.image_dir + f) for f in os.listdir(self.image_dir)]   
+        except Exception as e:
+            print("Exception!!")
+            print(e)
+            return
+
+            
+
+    def already_parsed(self, id):
+        return os.path.exists(self.parsed_dir + "unnamed_" + str(id) + ".txt")
+
+    
