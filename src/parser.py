@@ -26,10 +26,11 @@ class Parser:
 
         try:
             with open(self.parsed_dir + filename) as f:
-                whitespace_matcher = re.compile('\s+')
+                whitespace_matcher = re.compile('^\s+')
                 lines = [next(f) for x in range(TITLE_LINES)]
                 lines = [x for x in lines if whitespace_matcher.match(x) is None]
                 title = ''
+                print(lines)
 
                 for i in range(len(lines)):
                     line = lines[i]
@@ -86,6 +87,8 @@ class Parser:
             return
 
             
+    # def cleanup_pdfs(self, id):
+        # in_file = open(self.parsed_dir + )
 
     def already_parsed(self, id):
         return os.path.exists(self.parsed_dir + "unnamed_" + str(id) + ".txt")

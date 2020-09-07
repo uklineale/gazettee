@@ -4,3 +4,4 @@ parsed_texts/
 retitled_texts/
 src/__pycache__/
 .vscode/
+*.pyc
