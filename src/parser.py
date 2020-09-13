@@ -17,6 +17,9 @@ class Parser:
         self.parsed_dir = parsed_dir
         self.retitled_dir = retitled_dir
 
+    # TODO: generic clean function before uploading to S3
+    def clean(self, id):
+        self.retitle(id)
 
     # Only works on EPD police policy documents
     # TODO: parse dates in rename
