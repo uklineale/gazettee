@@ -5,3 +5,4 @@ retitled_texts/
 src/__pycache__/
 .vscode/
 *.pyc
+venv/

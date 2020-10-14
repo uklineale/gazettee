@@ -23,7 +23,7 @@ class Scraper:
             url = self.url + str(i)
             pdf_page = requests.get(url)
             if pdf_page.status_code  < 299 :
-                filename = self.out_path + 'unnamed_' + str(i) + '.pdf'
+                filename = self.out_path + str(i) + '.pdf'
                 with open(filename, 'wb') as f:
                     f.write(pdf_page.content)
                 self.error_counter = 0
@@ -36,7 +36,7 @@ class Scraper:
                 return
             
             # Don't wreck govt servers
-            time.sleep(4)
+            time.sleep(2)
 
 
 

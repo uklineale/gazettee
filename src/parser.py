@@ -19,12 +19,20 @@ class Parser:
 
     # TODO: generic clean function before uploading to S3
     def clean(self, id):
-        self.retitle(id)
+        f = open(self.parsed_dir + str(id) + '.txt', 'r+')
+        
+        unclean = f.read()
+        no_empty_lines = re.sub('^\s+', '', unclean)
+
+        f.seek(0)
+        f.write(no_empty_lines)
+        f.close()
 
     # Only works on EPD police policy documents
     # TODO: parse dates in rename
+    # only useful for human classification
     def retitle(self, id):
-        filename = "unnamed_" + str(id) + ".txt"
+        filename = str(id) + ".txt"
         title = ''
 
         try:
@@ -62,7 +70,7 @@ class Parser:
                 print("Skipping " + str(id))
                 return
 
-            filename = "unnamed_" + str(id) + ".pdf"
+            filename = str(id) + ".pdf"
             print("Parsing " + filename)
             pages = convert_from_path(self.pdf_dir + filename, pages)
 
@@ -94,6 +102,6 @@ class Parser:
         # in_file = open(self.parsed_dir + )
 
     def already_parsed(self, id):
-        return os.path.exists(self.parsed_dir + "unnamed_" + str(id) + ".txt")
+        return os.path.exists(self.parsed_dir + str(id) + ".txt")
 
     

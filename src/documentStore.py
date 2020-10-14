@@ -8,28 +8,27 @@ BUCKET_NAME = 'unshackle-docs'
 # title - str
 # tf-idfs per word?
 class DocumentStore:
-    def __init__(self, docs_dir, retitled_dir):
-        self.pdf_dir = pdf_dir
+    def __init__(self, docs_dir, parsed_dir):
         self.docs_dir = docs_dir
-        self.retitled_dir = retitled_dir
+        self.parsed_dir = parsed_dir
 
-        self.s3 = boto3.resource('s3')
+        self.s3 = boto3.client('s3')
 
-    def get_documents(self, id):
-        self.download(self.docs_dir)
 
     def download(self, dir, id):
-        object_name = dir + '/' + str(id)
-        # with
-        # self.s3.download_file(BUCKET_NAME, object_name, )
+        object_name = str(id) + '.txt'
+        print('Downloading ' + object_name)
+        try:
+            self.s3.download_file(BUCKET_NAME, object_name, dir + '/' + str(id) + '.txt')
+        except Exception as e:
+            print("Exception!!")
+            print(e)
+            return 
 
     def upload(self, dir):
+        print(dir)
         for filename in os.listdir(dir):
-            src = self.retitled_dir + filename
-            print('Uploading ' + src)
-            self.s3.Object(BUCKET_NAME, src).put(Body=open(src, 'rb'))
-
-    def upload_retitled(self):
-        self.upload(self.retitled_dir)
+            print('Uploading ' + filename)
+            self.s3.Object(BUCKET_NAME, filename).put(Body=open(dir + filename, 'rb'))
 
     

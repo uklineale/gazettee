@@ -10,6 +10,9 @@ class Classifier:
         self.test_end = test_range[1]
 
     def classify_pdfs(self):
+        train_words = []
+        test_words = []
+
         for filename in os.listdir(self.parsed_dir):
             print("Classifying " + filename)
             
@@ -19,8 +22,8 @@ class Classifier:
             print(vectorizer.get_feature_names())
 
     def tf_idf(self, document):
-        tf = term_frequency(document)
-        idf = inverse_document_frequency(document)
+        tf = self.term_frequency(document)
+        # idf = inverse_document_frequency(document)
 
     def term_frequency(self, document):
         counts = collections.defaultdict(int)

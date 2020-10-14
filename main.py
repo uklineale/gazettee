@@ -8,24 +8,26 @@ RETITLED_DIR = "human_readable/retitled_texts/"
 # Find police auditor info, summarize snippets and outcome (find patterns in what's getting dismissed)
 # City council meeting minutes about police budget
 
-def scrape(start, end):
+def store(start, end):
     p = parser.Parser(RAW_DOCS_DIR, IMAGE_DIR, PARSED_DIR, RETITLED_DIR)
     s = scraper.Scraper(RAW_DOCS_DIR)
+    dao = documentStore.DocumentStore(RAW_DOCS_DIR, PARSED_DIR)
 
+    s.download_pages(start,end)
     for i in range(start, end):
         p.parse_pdfs(i)
-        p.retitle(i)
-        p.clean(i)
+    dao.upload(PARSED_DIR)
 
-def upload():
-    u = documentStore.DocumentStore(RAW_DOCS_DIR, IMAGE_DIR, PARSED_DIR, RETITLED_DIR)
-    u.upload_retitled()
+def analyze(start, end):
+    dao = documentStore.DocumentStore(RAW_DOCS_DIR, PARSED_DIR)
+    for i in range(start, end):
+        dao.download(PARSED_DIR, i)
 
 def main():
-    test = 'here is a sentence. a sentence'
-    c = classifier.Classifier('a', (1,100), (1,100))
-    print(c.term_frequency(test))
-
+    # Scrape, parse, and upload to S3/Dynamo
+    # store(2500,2515)
+    # Download and run tf-idf
+    analyze(2500,2515)
 
 if __name__ == '__main__':
     main()
