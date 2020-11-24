@@ -1,0 +1,8 @@
+pdf2image
+Pillow
+tesseract
+pytesseract
+sklearn
+requests
+bs4
+boto3
