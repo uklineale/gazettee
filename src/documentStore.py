@@ -29,6 +29,8 @@ class DocumentStore:
         print(dir)
         for filename in os.listdir(dir):
             print('Uploading ' + filename)
-            self.s3.Object(BUCKET_NAME, filename).put(Body=open(dir + filename, 'rb'))
-
-    
+            try:
+                self.s3.upload_file(dir + '/' + filename, BUCKET_NAME, filename)
+            except Exception as e:
+                print("Exception!!")
+                print(e)

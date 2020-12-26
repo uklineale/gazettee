@@ -20,14 +20,18 @@ def store(start, end):
 
 def analyze(start, end):
     dao = documentStore.DocumentStore(RAW_DOCS_DIR, PARSED_DIR)
-    for i in range(start, end):
-        dao.download(PARSED_DIR, i)
+    c = classifier.Classifier(PARSED_DIR)
+    # for i in range(start, end):
+    #     dao.download(PARSED_DIR, i)
+    c.classify_pdfs()
 
 def main():
+    start = 2500
+    end = 2530
     # Scrape, parse, and upload to S3/Dynamo
-    # store(2500,2515)
+    # store(start,end)
     # Download and run tf-idf
-    analyze(2500,2515)
+    analyze(start,end)
 
 if __name__ == '__main__':
     main()

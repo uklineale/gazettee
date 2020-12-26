@@ -1,25 +1,45 @@
-import collections, string
+import collections, string, os
+from sklearn.feature_extraction.text import TfidfVectorizer
+import pandas as pd
 
+TRAIN_RATIO = 0.8
 
 class Classifier:
-    def __init__(self, polished_docs_dir, train_range, test_range):
-        self.docs_dir = polished_docs_dir
-        self.train_start = train_range[0]
-        self.train_end = train_range[1]
-        self.test_start = test_range[0]
-        self.test_end = test_range[1]
+    def __init__(self, parsed_dir):
+        self.parsed_dir = parsed_dir
 
     def classify_pdfs(self):
         train_words = []
         test_words = []
 
-        for filename in os.listdir(self.parsed_dir):
-            print("Classifying " + filename)
-            
-            vectorizer = TfidfVectorizer()
-            vectorizer.fit_transform(train_set)
+        files =  os.listdir(self.parsed_dir)
+        train_index = round(TRAIN_RATIO * len(files))
+        
+        train_files = files[:train_index]
+        test_files = files[train_index:]
 
-            print(vectorizer.get_feature_names())
+        for filename in train_files:
+            self.add_file_to_word_bag(filename, train_words)
+            
+        for filename in test_files:
+            self.add_file_to_word_bag(filename, test_words)
+           
+        vectorizer = TfidfVectorizer()
+        vectorizer.fit_transform(train_words)
+
+        results = vectorizer.transform(test_words)
+        print(vectorizer.get_feature_names())
+
+    def add_file_to_word_bag(self, filename, bag):
+        f = open(self.parsed_dir + filename, 'r')
+        text = f.read()
+        words = self.get_words(text)
+        bag.append(words)
+        f.close()
+
+    def get_words(self, text):
+        no_punc = [ str.lower(w) for w in text.split() if w not in string.punctuation ]
+        return ' '.join(no_punc)
 
     def tf_idf(self, document):
         tf = self.term_frequency(document)
