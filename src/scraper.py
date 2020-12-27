@@ -1,11 +1,7 @@
 import requests
 import time
 from bs4 import BeautifulSoup
-
-# AMID_to_topic = {
-#     '111' : "police_audit",
-#     '112' : "city_co"
-# }
+import boto3
 
 # Built around Eugene gov site
 class Scraper:
@@ -16,10 +12,11 @@ class Scraper:
         self.url = 'https://www.eugene-or.gov/ArchiveCenter/ViewFile/Item/'
         self.error_limit = 15
 
+    def download_documents(self, docs):
+        print("Iterating through documents %s-%s" % (docs[0], docs[-1]))
+        readable_docs = list(docs)
 
-    def download_pages(self, start_page, end_page):
-        print("Iterating through pages %s-%s" % (start_page, end_page))
-        for i in range(start_page, end_page):
+        for i in docs:
             url = self.url + str(i)
             pdf_page = requests.get(url)
             if pdf_page.status_code  < 299 :
@@ -30,6 +27,7 @@ class Scraper:
             else:
                 print("Failed to get page " + str(i))
                 self.error_counter += 1
+                readable_docs.remove(i)
             
             if self.error_counter >= self.error_limit:
                 print("Too many consecutive failures. Stopping.")
@@ -37,6 +35,8 @@ class Scraper:
             
             # Don't wreck govt servers
             time.sleep(2)
+        
+        return readable_docs
 
 
 

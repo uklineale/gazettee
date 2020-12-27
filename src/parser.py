@@ -1,6 +1,7 @@
 from pdf2image import convert_from_path
 import os
 import time
+import string
 from shutil import copyfile
 import re
 from PIL import Image
@@ -17,12 +18,13 @@ class Parser:
         self.parsed_dir = parsed_dir
         self.retitled_dir = retitled_dir
 
-    # TODO: generic clean function before uploading to S3
     def clean(self, id):
         f = open(self.parsed_dir + str(id) + '.txt', 'r+')
         
         unclean = f.read()
         no_empty_lines = re.sub('^\s+', '', unclean)
+        lowered = no_empty_lines.lower()
+        no_punc = lowered.translate(str.maketrans('','', string.punctuation))
 
         f.seek(0)
         f.write(no_empty_lines)
@@ -30,7 +32,7 @@ class Parser:
 
     # Only works on EPD police policy documents
     # TODO: parse dates in rename
-    # only useful for human classification
+    # only useful for human classification, verification
     def retitle(self, id):
         filename = str(id) + ".txt"
         title = ''
@@ -62,8 +64,6 @@ class Parser:
             print(e)
             return 
 
-            
-#TODO: rotate horizontally scanned images (from books), creates garbage after OCR
     def parse_pdfs(self, id, pages=300):
         try:
             if self.already_parsed(id):
@@ -96,10 +96,6 @@ class Parser:
             print("Exception!!")
             print(e)
             return
-
-            
-    # def cleanup_pdfs(self, id):
-        # in_file = open(self.parsed_dir + )
 
     def already_parsed(self, id):
         return os.path.exists(self.parsed_dir + str(id) + ".txt")

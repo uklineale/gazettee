@@ -5,8 +5,7 @@ Use ngrams to detect English - AWS data registry
     - Auto-rotate pages that return gibberish
     - Exclude pages that still return gibberish 
     - Is statistical frequency sufficient??
-S3 uploader
-Datalake - varchar id, varchar title, varchar pdf_link, groups, tags
+Datalake - varchar id, varchar s3_link, varchar pdf_link, keywords, tags
 
 
 #### Observed clusters:

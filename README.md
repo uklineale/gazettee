@@ -1,2 +1,2 @@
 # gazettee
-A scraper that knows what you want to scrape
+A scraper that knows what you want to scrape.

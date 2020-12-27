@@ -1,4 +1,4 @@
-from src import parser, scraper, documentStore, classifier
+from src import parser, scraper, documentStore, classifier, queueClient
 
 RAW_DOCS_DIR = "raw_docs/"
 IMAGE_DIR = "images/"
@@ -11,12 +11,18 @@ RETITLED_DIR = "human_readable/retitled_texts/"
 def store(start, end):
     p = parser.Parser(RAW_DOCS_DIR, IMAGE_DIR, PARSED_DIR, RETITLED_DIR)
     s = scraper.Scraper(RAW_DOCS_DIR)
+    qc = queueClient.QueueClient()
     dao = documentStore.DocumentStore(RAW_DOCS_DIR, PARSED_DIR)
 
-    s.download_pages(start,end)
-    for i in range(start, end):
+    docs = list(range(start, end))
+    unstored_docs = [ d for d in docs if not dao.is_stored(d) ]
+    readable_docs = s.download_documents(unstored_docs)
+    
+    for i in readable_docs:
         p.parse_pdfs(i)
-    dao.upload(PARSED_DIR)
+        p.clean(i)
+        dao.upload(i)
+        qc.upload_new_doc(i)
 
 def analyze(start, end):
     dao = documentStore.DocumentStore(RAW_DOCS_DIR, PARSED_DIR)
@@ -25,9 +31,9 @@ def analyze(start, end):
 
 def main():
     # Scrape, parse, and upload to S3/Dynamo
-    # store(2500,2515)
+    store(2500,2510)
     # Download and run tf-idf
-    analyze(2500,2515)
+    # analyze(2500,2515)
 
 if __name__ == '__main__':
     main()
