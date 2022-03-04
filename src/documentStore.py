@@ -3,10 +3,6 @@ import os
 
 BUCKET_NAME = 'unshackle-docs'
 
-# Schema makes things efficient
-# Clean all docs before upload to 'docs'
-# title - str
-# tf-idfs per word?
 class DocumentStore:
     def __init__(self, docs_dir, parsed_dir):
         self.docs_dir = docs_dir

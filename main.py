@@ -7,6 +7,7 @@ RETITLED_DIR = "human_readable/retitled_texts/"
 
 # Find police auditor info, summarize snippets and outcome (find patterns in what's getting dismissed)
 # City council meeting minutes about police budget
+# Local voting reminders
 
 def store(start, end):
     p = parser.Parser(RAW_DOCS_DIR, IMAGE_DIR, PARSED_DIR, RETITLED_DIR)

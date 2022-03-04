@@ -17,7 +17,6 @@ class Parser:
         self.parsed_dir = parsed_dir
         self.retitled_dir = retitled_dir
 
-    # TODO: generic clean function before uploading to S3
     def clean(self, id):
         f = open(self.parsed_dir + str(id) + '.txt', 'r+')
         
@@ -30,7 +29,6 @@ class Parser:
 
     # Only works on EPD police policy documents
     # TODO: parse dates in rename
-    # only useful for human classification
     def retitle(self, id):
         filename = str(id) + ".txt"
         title = ''
@@ -96,10 +94,6 @@ class Parser:
             print("Exception!!")
             print(e)
             return
-
-            
-    # def cleanup_pdfs(self, id):
-        # in_file = open(self.parsed_dir + )
 
     def already_parsed(self, id):
         return os.path.exists(self.parsed_dir + str(id) + ".txt")
